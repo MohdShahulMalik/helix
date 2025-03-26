@@ -223,17 +223,9 @@ pub struct Document {
     // NOTE: ideally this would live on the handler for color swatches. This is blocked on a
     // large refactor that would make `&mut Editor` available on the `DocumentDidChange` event.
     pub color_swatch_controller: TaskController,
-    /// Per-view task controllers for canceling in-flight document highlight requests.
-    pub document_highlight_controllers: HashMap<ViewId, TaskController>,
-    /// Per-view task controllers for canceling in-flight code action requests.
-    pub code_action_controllers: HashMap<ViewId, TaskController>,
-    pub pull_diagnostic_controller: TaskController,
-    pub document_link_controller: TaskController,
 
-    // NOTE: this field should eventually go away - we should use the Editor's syn_loader instead
-    // of storing a copy on every doc. Then we can remove the surrounding `Arc` and use the
-    // `ArcSwap` directly.
-    syn_loader: Arc<ArcSwap<syntax::Loader>>,
+    /// Whether to render the dashboard when opening the document
+    pub is_welcome: bool,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -770,12 +762,7 @@ impl Document {
             color_swatches: None,
             document_links: Vec::new(),
             color_swatch_controller: TaskController::new(),
-            document_highlight_controllers: HashMap::new(),
-            code_action_controllers: HashMap::new(),
-            syn_loader,
-            previous_diagnostic_ids: HashMap::new(),
-            pull_diagnostic_controller: TaskController::new(),
-            document_link_controller: TaskController::new(),
+            is_welcome: false,
         }
     }
 
@@ -786,6 +773,11 @@ impl Document {
         let line_ending: LineEnding = config.load().default_line_ending.into();
         let text = Rope::from(line_ending.as_str());
         Self::from(text, None, config, syn_loader)
+    }
+
+    pub fn with_welcome(mut self) -> Self {
+        self.is_welcome = true;
+        self
     }
 
     // TODO: async fn?
