@@ -166,7 +166,7 @@ impl EditorView {
         let raw_help_lines: [(Spans, AlignLine); 12] = [
             (
                 vec![
-                    Span::raw("helix "),
+                    Span::raw("Maxum's Helix "),
                     Span::styled(VERSION_AND_GIT_HASH, theme.get("comment")),
                 ]
                 .into(),
@@ -175,7 +175,7 @@ impl EditorView {
             empty_line(),
             (
                 Span::styled(
-                    "A post-modern modal text editor",
+                    "Let's enter the BEAST MODE",
                     theme.get("ui.text").add_modifier(Modifier::ITALIC),
                 )
                 .into(),
