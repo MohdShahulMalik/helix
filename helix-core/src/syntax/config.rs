@@ -101,6 +101,8 @@ pub struct LanguageConfiguration {
     pub workspace_lsp_roots: Option<Vec<PathBuf>>,
     #[serde(default)]
     pub persistent_diagnostic_sources: Vec<String>,
+    /// Overrides the `editor.rainbow-brackets` config key for the language.
+    pub rainbow_brackets: Option<bool>,
 }
 
 impl LanguageConfiguration {
@@ -268,6 +270,7 @@ pub enum LanguageServerFeature {
     WorkspaceSymbols,
     // Symbols, use bitflags, see above?
     Diagnostics,
+    PullDiagnostics,
     RenameSymbol,
     InlayHints,
     DocumentColors,
@@ -292,6 +295,7 @@ impl Display for LanguageServerFeature {
             DocumentSymbols => "document-symbols",
             WorkspaceSymbols => "workspace-symbols",
             Diagnostics => "diagnostics",
+            PullDiagnostics => "pull-diagnostics",
             RenameSymbol => "rename-symbol",
             InlayHints => "inlay-hints",
             DocumentColors => "document-colors",
@@ -444,6 +448,7 @@ pub enum DebugArgumentValue {
     String(String),
     Array(Vec<String>),
     Boolean(bool),
+    Table(HashMap<String, String>),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
