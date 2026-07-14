@@ -12,11 +12,14 @@
 
 ; ================ Global defaults ================
 
-; Default everything to be bash
+; Default recipe lines to be bash, but exclude interpolation nodes
+; This prevents bash's rainbow brackets from interfering with just's {{ }} markers
+; Use injection.combined to combine all recipe lines so bash can parse multi-line constructs
 (recipe_body
   !shebang
+  (recipe_line) @injection.content
   (#set! injection.language "bash")
-  (#set! injection.include-children)) @injection.content
+  (#set! injection.combined))
 
 (external_command
   (content) @injection.content
@@ -42,14 +45,15 @@
 ; See https://github.com/tree-sitter/tree-sitter/issues/880 for more on that.
 
 (file
-  (setting "shell" ":=" "[" (string) @_langstr
+  (setting "shell" ":=" "[" . (string) @_langstr
     (#match? @_langstr ".*(powershell|pwsh|cmd).*")
     (#set! injection.language "powershell"))
   [
     (recipe
       (recipe_body
         !shebang
-        (#set! injection.include-children)) @injection.content)
+        (recipe_line) @injection.content
+        (#set! injection.combined)))
 
     (assignment
       (expression
@@ -59,13 +63,14 @@
   ])
 
 (file
-  (setting "shell" ":=" "[" (string) @injection.language
+  (setting "shell" ":=" "[" . (string) @injection.language
     (#not-match? @injection.language ".*(powershell|pwsh|cmd).*"))
   [
     (recipe
       (recipe_body
         !shebang
-        (#set! injection.include-children)) @injection.content)
+        (recipe_line) @injection.content
+        (#set! injection.combined)))
 
     (assignment
       (expression
@@ -79,4 +84,5 @@
 ; Set highlighting for recipes that specify a language using builtin shebang matching
 (recipe_body
   (shebang_line) @injection.shebang
-  (#set! injection.include-children)) @injection.content
+  (recipe_line) @injection.content
+  (#set! injection.combined))

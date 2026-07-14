@@ -23,11 +23,13 @@ pub struct Handlers {
     pub signature_hints: Sender<lsp::SignatureHelpEvent>,
     pub auto_save: Sender<AutoSaveEvent>,
     pub document_colors: Sender<lsp::DocumentColorsEvent>,
+    pub document_links: Sender<lsp::DocumentLinksEvent>,
     pub word_index: word_index::Handler,
     pub pull_diagnostics: Sender<lsp::PullDiagnosticsEvent>,
     pub pull_all_documents_diagnostics: Sender<lsp::PullAllDocumentsDiagnosticsEvent>,
     /// Auto-trigger via channel; manual trigger bypasses debounce (see helix-term handler)
     pub inline_completions: Sender<()>,
+    pub code_action_hint: Sender<lsp::CodeActionHintEvent>,
 }
 
 impl Handlers {
