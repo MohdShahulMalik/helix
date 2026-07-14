@@ -102,7 +102,11 @@ impl TerminaBackend {
         let start = Instant::now();
 
         // HACK: emitting OSC11 / OSC111 seems to break SGR and cause flickering in tmux.
-        capabilities.dynamic_background_color = std::env::var_os("TMUX").is_none();
+        // WezTerm supports OSC 11 (set) but not OSC 111 (reset), so background color
+        // bleeds after exit when the original color can't be queried in time.
+        let is_wezterm = term_program().as_deref() == Some("WezTerm");
+        capabilities.dynamic_background_color =
+            std::env::var_os("TMUX").is_none() && !is_wezterm;
 
         capabilities.kitty_keyboard = match config.kitty_keyboard_protocol {
             KittyKeyboardProtocolConfig::Disabled => KittyKeyboardSupport::None,
